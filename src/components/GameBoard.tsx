@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import { CORGI_MAP } from "@/lib/corgi-images";
 import type { GameTile } from "@/hooks/use-game";
@@ -68,7 +68,7 @@ interface GameBoardProps {
   onNewGame: () => void;
 }
 
-export function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps) {
+export const GameBoard = memo(function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps) {
   const touchRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
@@ -104,12 +104,15 @@ export function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps
     [onMove]
   );
 
-  const emptyCells: ReactNode[] = [];
-  for (let row = 0; row < 4; row += 1) {
-    for (let col = 0; col < 4; col += 1) {
-      emptyCells.push(<div key={`${row}-${col}`} className="rounded-lg bg-cell-bg" />);
+  const emptyCells = useMemo(() => {
+    const cells: ReactNode[] = [];
+    for (let row = 0; row < 4; row += 1) {
+      for (let col = 0; col < 4; col += 1) {
+        cells.push(<div key={`${row}-${col}`} className="rounded-lg bg-cell-bg" />);
+      }
     }
-  }
+    return cells;
+  }, []);
 
   return (
     <div
@@ -143,4 +146,4 @@ export function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps
       )}
     </div>
   );
-}
+});
