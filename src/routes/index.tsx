@@ -15,15 +15,6 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { tiles, score, bestScore, gameOver, won, newGame, handleMove, keepPlaying } = useGame();
-  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
-
-  const toggleSound = useCallback(() => {
-    setSoundOn((prev) => {
-      const next = !prev;
-      setSoundEnabled(next);
-      return next;
-    });
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 gap-6">
@@ -47,13 +38,6 @@ function Index() {
           className="rounded-lg bg-primary text-primary-foreground px-4 py-2 font-bold text-sm hover:opacity-90 transition-opacity"
         >
           New Game
-        </button>
-        <button
-          onClick={toggleSound}
-          className="rounded-lg bg-secondary text-foreground px-3 py-2 text-lg hover:opacity-90 transition-opacity"
-          aria-label={soundOn ? "Mute sound" : "Unmute sound"}
-        >
-          {soundOn ? "🔊" : "🔇"}
         </button>
       </div>
 
