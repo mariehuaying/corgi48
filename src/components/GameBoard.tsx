@@ -1,6 +1,7 @@
 import { memo, useCallback, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import { CORGI_MAP } from "@/lib/corgi-images";
+import { ensureAudioContext } from "@/lib/audio";
 import type { GameTile } from "@/hooks/use-game";
 
 const TILE_GAP = 6;
@@ -75,6 +76,7 @@ export const GameBoard = memo(function GameBoard({ tiles, gameOver, won, onMove,
 
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
     const touch = event.touches[0];
+    ensureAudioContext();
     touchRef.current = { x: touch.clientX, y: touch.clientY };
   }, []);
 

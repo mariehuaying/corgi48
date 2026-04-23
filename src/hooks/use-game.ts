@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { playMergeChime } from "@/lib/audio";
+import { playMergeChime, ensureAudioContext } from "@/lib/audio";
 
 const GRID_SIZE = 4;
 
@@ -323,6 +323,7 @@ export function useGame() {
       }
 
       event.preventDefault();
+      ensureAudioContext();
       const t0 = performance.now();
       dispatch({ type: "move", direction });
       const t1 = performance.now();
