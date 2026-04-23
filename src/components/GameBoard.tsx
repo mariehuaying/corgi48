@@ -147,37 +147,3 @@ export const GameBoard = memo(function GameBoard({ tiles, gameOver, onMove, onNe
     </div>
   );
 });
-
-  return (
-    <div
-      className="relative aspect-square w-full max-w-[min(90vw,400px)] touch-none select-none rounded-xl bg-grid-bg p-1.5"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div className="grid h-full w-full grid-cols-4 grid-rows-4 gap-1.5">
-        {emptyCells}
-      </div>
-      <div className="pointer-events-none absolute inset-1.5">
-        {tiles.map((tile) => (
-          <TileView key={tile.id} tile={tile} />
-        ))}
-      </div>
-      {gameOver && (
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-xl"
-          style={{ backgroundColor: "oklch(0.25 0.04 50 / 75%)" }}
-        >
-          <p className="text-3xl font-bold" style={{ color: "oklch(0.97 0.01 75)" }}>
-            Game Over!
-          </p>
-          <button
-            onClick={onNewGame}
-            className="rounded-lg bg-primary px-6 py-2 text-lg font-bold text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            Try Again
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
