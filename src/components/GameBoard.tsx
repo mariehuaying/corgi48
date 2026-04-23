@@ -28,7 +28,7 @@ const TileView = memo(
         }}
       >
         <div className={`relative h-full w-full overflow-hidden rounded-lg ${animClass}`}>
-          {src && !isGold ? (
+          {src ? (
             <img
               src={src}
               alt={String(tile.value)}
@@ -40,7 +40,7 @@ const TileView = memo(
               className="flex h-full w-full items-center justify-center rounded-lg text-2xl font-bold"
               style={{ backgroundColor: "var(--tile-gold)", color: "var(--foreground)" }}
             >
-              🏆
+              {tile.value}
             </div>
           )}
           <span
