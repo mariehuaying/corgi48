@@ -51,9 +51,9 @@
   --font-display: "Nunito", system-ui, sans-serif;
   --font-body: "Nunito", system-ui, sans-serif;
 
-  --animate-tile-pop: tile-pop 0.2s ease-out;
-  --animate-tile-appear: tile-appear 0.15s ease-out;
-  --animate-tile-merge: tile-merge 0.3s ease-out;
+  --animate-tile-pop: tile-pop 0.08s ease-out;
+  --animate-tile-appear: tile-appear 0.08s ease-out;
+  --animate-tile-merge: tile-merge 0.08s ease-out;
 }
 
 @keyframes tile-pop {

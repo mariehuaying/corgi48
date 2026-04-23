@@ -23,7 +23,7 @@ const TileView = memo(
           width: TILE_SIZE,
           height: TILE_SIZE,
           transform: `translate3d(calc(${tile.col * 100}% + ${tile.col * TILE_GAP}px), calc(${tile.row * 100}% + ${tile.row * TILE_GAP}px), 0)`,
-          transition: "transform 120ms ease-out",
+          transition: "transform 80ms ease-out",
           willChange: "transform",
         }}
       >
