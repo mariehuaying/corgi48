@@ -42,7 +42,7 @@ function Index() {
 
       <GameBoard tiles={tiles} gameOver={gameOver} won={won} onMove={handleMove} onNewGame={newGame} onKeepPlaying={keepPlaying} />
 
-      <p className="text-xs text-muted-foreground">Use arrow keys or swipe to play</p>
+      
     </div>
   );
 }
