@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { playMergeChime } from "@/lib/audio";
+import { playMergeChime, ensureAudioContext } from "@/lib/audio";
 
 const GRID_SIZE = 4;
 
