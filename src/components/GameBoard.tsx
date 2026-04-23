@@ -64,11 +64,13 @@ const TileView = memo(
 interface GameBoardProps {
   tiles: GameTile[];
   gameOver: boolean;
+  won: boolean;
   onMove: (dir: "up" | "down" | "left" | "right") => void;
   onNewGame: () => void;
+  onKeepPlaying: () => void;
 }
 
-export const GameBoard = memo(function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps) {
+export const GameBoard = memo(function GameBoard({ tiles, gameOver, won, onMove, onNewGame, onKeepPlaying }: GameBoardProps) {
   const touchRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
