@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { playMergeChime } from "@/lib/audio";
 
 const GRID_SIZE = 4;
 
