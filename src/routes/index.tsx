@@ -19,9 +19,8 @@ function Index() {
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 gap-6">
       <div className="text-center">
         <h1 className="text-5xl font-bold tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
-          🐾 Corgi48
+          Corgi48
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">Merge the corgis!</p>
       </div>
 
       <div className="flex items-center gap-4">
