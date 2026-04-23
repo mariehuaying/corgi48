@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState, useCallback } from "react";
 import { useGame } from "../hooks/use-game";
 import { GameBoard } from "../components/GameBoard";
+import { isSoundEnabled, setSoundEnabled } from "../lib/audio";
 
 export const Route = createFileRoute("/")({
   component: Index,

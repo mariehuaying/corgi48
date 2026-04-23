@@ -1,4 +1,19 @@
 let audioCtx: AudioContext | null = null;
+let soundEnabled =
+  typeof window !== "undefined"
+    ? localStorage.getItem("corgi48-sound") !== "off"
+    : true;
+
+export function isSoundEnabled() {
+  return soundEnabled;
+}
+
+export function setSoundEnabled(enabled: boolean) {
+  soundEnabled = enabled;
+  if (typeof window !== "undefined") {
+    localStorage.setItem("corgi48-sound", enabled ? "on" : "off");
+  }
+}
 
 export function ensureAudioContext() {
   if (!audioCtx) {
@@ -10,7 +25,7 @@ export function ensureAudioContext() {
 }
 
 export function playMergeChime() {
-  if (!audioCtx || audioCtx.state !== "running") return;
+  if (!soundEnabled || !audioCtx || audioCtx.state !== "running") return;
 
   const ctx = audioCtx;
   const now = ctx.currentTime;
