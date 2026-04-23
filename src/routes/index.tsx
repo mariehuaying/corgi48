@@ -60,7 +60,12 @@ function Index() {
 
       <GameBoard tiles={tiles} gameOver={gameOver} won={won} onMove={handleMove} onNewGame={newGame} onKeepPlaying={keepPlaying} />
 
-      
+      <button
+        onClick={debugTestSound}
+        className="rounded-lg bg-accent text-accent-foreground px-5 py-3 font-bold text-base"
+      >
+        🔊 Test Sound
+      </button>
     </div>
   );
 }
