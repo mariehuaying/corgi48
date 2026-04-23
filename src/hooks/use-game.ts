@@ -301,7 +301,18 @@ export function useGame() {
       }
 
       event.preventDefault();
+      const t0 = performance.now();
       dispatch({ type: "move", direction });
+      const t1 = performance.now();
+      console.log(`[perf] dispatch: ${(t1 - t0).toFixed(2)}ms`);
+      requestAnimationFrame(() => {
+        const t2 = performance.now();
+        console.log(`[perf] to rAF: ${(t2 - t0).toFixed(2)}ms`);
+        requestAnimationFrame(() => {
+          const t3 = performance.now();
+          console.log(`[perf] to paint: ${(t3 - t0).toFixed(2)}ms`);
+        });
+      });
     };
 
     window.addEventListener("keydown", handler);
