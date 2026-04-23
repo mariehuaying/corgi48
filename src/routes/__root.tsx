@@ -30,14 +30,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Corgi48" },
+      { name: "description", content: "2048, corgi edition." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Corgi48" },
+      { property: "og:description", content: "2048, corgi edition." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Corgi48" },
+      { name: "twitter:description", content: "2048, corgi edition." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3708669-154c-454d-93a7-94d9be3343e1/id-preview-b01ef573--c56a0c25-d00f-450e-ab7e-e0395c82306b.lovable.app-1776930136187.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a3708669-154c-454d-93a7-94d9be3343e1/id-preview-b01ef573--c56a0c25-d00f-450e-ab7e-e0395c82306b.lovable.app-1776930136187.png" },
     ],
     links: [
       {
