@@ -323,6 +323,7 @@ export function useGame() {
       }
 
       event.preventDefault();
+      ensureAudioContext();
       const t0 = performance.now();
       dispatch({ type: "move", direction });
       const t1 = performance.now();
