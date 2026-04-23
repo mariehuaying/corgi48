@@ -1,5 +1,6 @@
 import { useRef, useCallback } from "react";
 import type { ReactNode } from "react";
+import { CORGI_MAP } from "@/lib/corgi-images";
 
 interface Tile {
   id: number;
@@ -9,19 +10,6 @@ interface Tile {
   merged?: boolean;
   isNew?: boolean;
 }
-
-const CORGI_MAP: Record<number, string> = {
-  2: "/corgis/corgi_2.png",
-  4: "/corgis/corgi_4.png",
-  8: "/corgis/corgi_8.png",
-  16: "/corgis/corgi_16.png",
-  32: "/corgis/corgi_32.png",
-  64: "/corgis/corgi_64.png",
-  128: "/corgis/corgi_128.png",
-  256: "/corgis/corgi_256.png",
-  512: "/corgis/corgi_512.png",
-  1024: "/corgis/corgi_1024.png",
-};
 
 function TileView({ tile }: { tile: Tile }) {
   const src = CORGI_MAP[tile.value];
@@ -46,24 +34,25 @@ function TileView({ tile }: { tile: Tile }) {
       {src && !isGold ? (
         <img
           src={src}
-          alt={`Corgi ${tile.value}`}
-          className="w-full h-full object-cover"
+          alt={String(tile.value)}
+          className="w-full h-full object-cover rounded-lg"
           draggable={false}
         />
       ) : (
         <div
-          className="w-full h-full flex items-center justify-center text-2xl font-bold"
+          className="w-full h-full flex items-center justify-center text-2xl font-bold rounded-lg"
           style={{ backgroundColor: "var(--tile-gold)", color: "var(--foreground)" }}
         >
           🏆
         </div>
       )}
       <span
-        className="absolute bottom-0.5 right-1 text-xs font-bold px-1.5 py-0.5 rounded-md"
+        className="absolute bottom-1 right-1 font-bold rounded-md leading-none"
         style={{
-          backgroundColor: "oklch(0.2 0.02 50 / 65%)",
+          backgroundColor: "oklch(0.15 0.02 50 / 55%)",
           color: "oklch(0.97 0.01 75)",
-          fontSize: tile.value >= 1000 ? "0.6rem" : "0.7rem",
+          fontSize: tile.value >= 1000 ? "0.55rem" : "0.65rem",
+          padding: "2px 5px",
         }}
       >
         {tile.value}
