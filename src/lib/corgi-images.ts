@@ -8,6 +8,7 @@ import corgi128 from "@/assets/corgis/corgi_128.png";
 import corgi256 from "@/assets/corgis/corgi_256.png";
 import corgi512 from "@/assets/corgis/corgi_512.png";
 import corgi1024 from "@/assets/corgis/corgi_1024.png";
+import corgi2048 from "@/assets/corgis/corgi_2048.png";
 
 export const CORGI_MAP: Record<number, string> = {
   2: corgi2,
@@ -20,4 +21,5 @@ export const CORGI_MAP: Record<number, string> = {
   256: corgi256,
   512: corgi512,
   1024: corgi1024,
+  2048: corgi2048,
 };
