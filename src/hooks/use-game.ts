@@ -17,11 +17,14 @@ interface GameState {
   tiles: GameTile[];
   score: number;
   gameOver: boolean;
+  won: boolean;
+  keepPlaying: boolean;
 }
 
 type Action =
   | { type: "move"; direction: Direction }
-  | { type: "newGame" };
+  | { type: "newGame" }
+  | { type: "keepPlaying" };
 
 let tileIdCounter = 0;
 
