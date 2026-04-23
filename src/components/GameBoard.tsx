@@ -130,6 +130,31 @@ export const GameBoard = memo(function GameBoard({ tiles, gameOver, won, onMove,
           <TileView key={tile.id} tile={tile} />
         ))}
       </div>
+      {won && (
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-xl"
+          style={{ backgroundColor: "oklch(0.45 0.15 85 / 85%)" }}
+        >
+          <p className="text-4xl font-bold" style={{ color: "oklch(0.97 0.01 75)" }}>
+            You Win! 🐾
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onKeepPlaying}
+              className="rounded-lg bg-primary px-5 py-2 text-sm font-bold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Keep Playing
+            </button>
+            <button
+              onClick={onNewGame}
+              className="rounded-lg border-2 px-5 py-2 text-sm font-bold transition-opacity hover:opacity-90"
+              style={{ borderColor: "oklch(0.97 0.01 75)", color: "oklch(0.97 0.01 75)" }}
+            >
+              New Game
+            </button>
+          </div>
+        </div>
+      )}
       {gameOver && (
         <div
           className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-xl"

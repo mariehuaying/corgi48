@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { tiles, score, bestScore, gameOver, newGame, handleMove } = useGame();
+  const { tiles, score, bestScore, gameOver, won, newGame, handleMove, keepPlaying } = useGame();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 gap-6">
@@ -41,7 +41,7 @@ function Index() {
         </button>
       </div>
 
-      <GameBoard tiles={tiles} gameOver={gameOver} onMove={handleMove} onNewGame={newGame} />
+      <GameBoard tiles={tiles} gameOver={gameOver} won={won} onMove={handleMove} onNewGame={newGame} onKeepPlaying={keepPlaying} />
 
       <p className="text-xs text-muted-foreground">Use arrow keys or swipe to play</p>
     </div>
