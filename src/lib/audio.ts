@@ -1,4 +1,5 @@
 let audioCtx: AudioContext | null = null;
+let isUnlocked = false;
 let soundEnabled =
   typeof window !== "undefined"
     ? localStorage.getItem("corgi48-sound") !== "off"
@@ -22,6 +23,21 @@ export function ensureAudioContext() {
   if (audioCtx.state === "suspended") {
     audioCtx.resume();
   }
+}
+
+function unlockAudioContext() {
+  if (isUnlocked) return;
+  const ctx = ensureAudioContext();
+  const buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(ctx.destination);
+  source.start(0);
+  isUnlocked = true;
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("touchstart", unlockAudioContext, { once: true });
 }
 
 export function playMergeChime() {
