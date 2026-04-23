@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
 import { CORGI_MAP } from "@/lib/corgi-images";
 import type { GameTile } from "@/hooks/use-game";
