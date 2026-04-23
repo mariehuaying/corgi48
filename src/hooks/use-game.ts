@@ -17,11 +17,14 @@ interface GameState {
   tiles: GameTile[];
   score: number;
   gameOver: boolean;
+  won: boolean;
+  keepPlaying: boolean;
 }
 
 type Action =
   | { type: "move"; direction: Direction }
-  | { type: "newGame" };
+  | { type: "newGame" }
+  | { type: "keepPlaying" };
 
 let tileIdCounter = 0;
 
@@ -123,6 +126,8 @@ function createInitialState(resetIds = false): GameState {
     tiles,
     score: 0,
     gameOver: false,
+    won: false,
+    keepPlaying: false,
   };
 }
 
@@ -234,8 +239,10 @@ function gameReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case "newGame":
       return createInitialState(true);
+    case "keepPlaying":
+      return { ...state, won: false, keepPlaying: true };
     case "move": {
-      if (state.gameOver) {
+      if (state.gameOver || (state.won && !state.keepPlaying)) {
         return state;
       }
 
@@ -246,13 +253,18 @@ function gameReducer(state: GameState, action: Action): GameState {
 
       const tiles = spawnRandomTile(result.tiles, true);
       const score = state.score + result.scoreGain;
+      const hasWon = !state.keepPlaying && tiles.some((t) => t.value >= 2048);
 
       return {
         tiles,
         score,
         gameOver: !canMove(tiles),
+        won: hasWon,
+        keepPlaying: state.keepPlaying,
       };
     }
+    default:
+      return state;
   }
 }
 
@@ -319,12 +331,18 @@ export function useGame() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  const keepPlaying = useCallback(() => {
+    dispatch({ type: "keepPlaying" });
+  }, []);
+
   return {
     tiles: game.tiles,
     score: game.score,
     bestScore,
     gameOver: game.gameOver,
+    won: game.won,
     newGame,
     handleMove,
+    keepPlaying,
   };
 }
