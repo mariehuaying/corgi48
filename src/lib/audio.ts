@@ -27,11 +27,12 @@ export function ensureAudioContext() {
 
 function unlockAudioContext() {
   if (isUnlocked) return;
-  const ctx = ensureAudioContext();
-  const buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
-  const source = ctx.createBufferSource();
+  ensureAudioContext();
+  if (!audioCtx) return;
+  const buffer = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+  const source = audioCtx.createBufferSource();
   source.buffer = buffer;
-  source.connect(ctx.destination);
+  source.connect(audioCtx.destination);
   source.start(0);
   isUnlocked = true;
 }
