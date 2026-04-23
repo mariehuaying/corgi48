@@ -118,7 +118,7 @@ export const GameBoard = memo(function GameBoard({ tiles, gameOver, won, onMove,
 
   return (
     <div
-      className="relative aspect-square w-full max-w-[min(90vw,400px)] touch-none select-none rounded-xl bg-grid-bg p-1.5"
+      className="relative aspect-square w-full max-w-[min(92vw,520px)] touch-none select-none rounded-xl bg-grid-bg p-2"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
