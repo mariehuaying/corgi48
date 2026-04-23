@@ -6,7 +6,7 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Corgi48 — The Cutest 2048 Game" },
+      { title: "Corgi48" },
       { name: "description", content: "Play 2048 with adorable corgis! Merge tiles to discover new corgi photos." },
     ],
   }),
