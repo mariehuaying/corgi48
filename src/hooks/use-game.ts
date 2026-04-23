@@ -291,6 +291,15 @@ export function useGame() {
     }
   }, [bestScore]);
 
+  // Play chime on merge
+  const prevTilesRef = useRef(game.tiles);
+  useEffect(() => {
+    if (game.tiles !== prevTilesRef.current && game.tiles.some((t) => t.merged)) {
+      playMergeChime();
+    }
+    prevTilesRef.current = game.tiles;
+  }, [game.tiles]);
+
   const handleMove = useCallback((direction: Direction) => {
     dispatch({ type: "move", direction });
   }, []);
