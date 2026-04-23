@@ -239,8 +239,10 @@ function gameReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case "newGame":
       return createInitialState(true);
+    case "keepPlaying":
+      return { ...state, won: false, keepPlaying: true };
     case "move": {
-      if (state.gameOver) {
+      if (state.gameOver || (state.won && !state.keepPlaying)) {
         return state;
       }
 
@@ -251,13 +253,18 @@ function gameReducer(state: GameState, action: Action): GameState {
 
       const tiles = spawnRandomTile(result.tiles, true);
       const score = state.score + result.scoreGain;
+      const hasWon = !state.keepPlaying && tiles.some((t) => t.value >= 2048);
 
       return {
         tiles,
         score,
         gameOver: !canMove(tiles),
+        won: hasWon,
+        keepPlaying: state.keepPlaying,
       };
     }
+    default:
+      return state;
   }
 }
 
