@@ -331,12 +331,18 @@ export function useGame() {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  const keepPlaying = useCallback(() => {
+    dispatch({ type: "keepPlaying" });
+  }, []);
+
   return {
     tiles: game.tiles,
     score: game.score,
     bestScore,
     gameOver: game.gameOver,
+    won: game.won,
     newGame,
     handleMove,
+    keepPlaying,
   };
 }
