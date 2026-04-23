@@ -126,6 +126,8 @@ function createInitialState(resetIds = false): GameState {
     tiles,
     score: 0,
     gameOver: false,
+    won: false,
+    keepPlaying: false,
   };
 }
 
