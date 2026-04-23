@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useReducer, useState } from "react";
 
-type Grid = number[][];
+const GRID_SIZE = 4;
+
 type Direction = "up" | "down" | "left" | "right";
 
-interface TileMeta {
+export interface GameTile {
   id: number;
   value: number;
   row: number;
@@ -12,182 +13,307 @@ interface TileMeta {
   isNew?: boolean;
 }
 
-let tileIdCounter = 0;
-const nextId = () => ++tileIdCounter;
-
-function createEmptyGrid(): Grid {
-  return Array.from({ length: 4 }, () => Array(4).fill(0));
+interface GameState {
+  tiles: GameTile[];
+  score: number;
+  gameOver: boolean;
 }
 
-function getEmptyCells(grid: Grid): [number, number][] {
+type Action =
+  | { type: "move"; direction: Direction }
+  | { type: "newGame" };
+
+let tileIdCounter = 0;
+
+function nextId() {
+  tileIdCounter += 1;
+  return tileIdCounter;
+}
+
+function createTile(value: number, row: number, col: number, isNew = false): GameTile {
+  return {
+    id: nextId(),
+    value,
+    row,
+    col,
+    merged: false,
+    isNew,
+  };
+}
+
+function updateTile(
+  tile: GameTile,
+  updates: Partial<Pick<GameTile, "value" | "row" | "col" | "merged" | "isNew">>
+): GameTile {
+  const nextValue = updates.value ?? tile.value;
+  const nextRow = updates.row ?? tile.row;
+  const nextCol = updates.col ?? tile.col;
+  const nextMerged = updates.merged ?? false;
+  const nextIsNew = updates.isNew ?? false;
+
+  if (
+    tile.value === nextValue &&
+    tile.row === nextRow &&
+    tile.col === nextCol &&
+    (tile.merged ?? false) === nextMerged &&
+    (tile.isNew ?? false) === nextIsNew
+  ) {
+    return tile;
+  }
+
+  return {
+    ...tile,
+    value: nextValue,
+    row: nextRow,
+    col: nextCol,
+    merged: nextMerged,
+    isNew: nextIsNew,
+  };
+}
+
+function getBoard(tiles: GameTile[]) {
+  const board = Array.from({ length: GRID_SIZE }, () =>
+    Array<GameTile | null>(GRID_SIZE).fill(null)
+  );
+
+  for (const tile of tiles) {
+    board[tile.row][tile.col] = tile;
+  }
+
+  return board;
+}
+
+function getEmptyCells(tiles: GameTile[]) {
+  const occupied = new Set(tiles.map((tile) => `${tile.row}-${tile.col}`));
   const cells: [number, number][] = [];
-  for (let r = 0; r < 4; r++)
-    for (let c = 0; c < 4; c++)
-      if (grid[r][c] === 0) cells.push([r, c]);
+
+  for (let row = 0; row < GRID_SIZE; row += 1) {
+    for (let col = 0; col < GRID_SIZE; col += 1) {
+      if (!occupied.has(`${row}-${col}`)) {
+        cells.push([row, col]);
+      }
+    }
+  }
+
   return cells;
 }
 
-function addRandomTile(grid: Grid): Grid {
-  const empty = getEmptyCells(grid);
-  if (empty.length === 0) return grid;
-  const [r, c] = empty[Math.floor(Math.random() * empty.length)];
-  const newGrid = grid.map((row) => [...row]);
-  newGrid[r][c] = Math.random() < 0.9 ? 2 : 4;
-  return newGrid;
-}
-
-function rotateGrid(grid: Grid): Grid {
-  const n = grid.length;
-  return Array.from({ length: n }, (_, i) =>
-    Array.from({ length: n }, (_, j) => grid[n - 1 - j][i])
-  );
-}
-
-function moveLeft(grid: Grid): { grid: Grid; score: number; moved: boolean; mergedPositions: Set<string> } {
-  let score = 0;
-  let moved = false;
-  const mergedPositions = new Set<string>();
-  const newGrid = grid.map((row, r) => {
-    const filtered = row.filter((v) => v !== 0);
-    const result: number[] = [];
-    for (let i = 0; i < filtered.length; i++) {
-      if (i + 1 < filtered.length && filtered[i] === filtered[i + 1]) {
-        const merged = filtered[i] * 2;
-        result.push(merged);
-        score += merged;
-        mergedPositions.add(`${r}-${result.length - 1}`);
-        i++;
-        moved = true;
-      } else {
-        result.push(filtered[i]);
-      }
-    }
-    while (result.length < 4) result.push(0);
-    if (result.some((v, i) => v !== row[i])) moved = true;
-    return result;
-  });
-  return { grid: newGrid, score, moved, mergedPositions };
-}
-
-function move(grid: Grid, direction: Direction): { grid: Grid; score: number; moved: boolean; mergedPositions: Set<string> } {
-  let rotations = 0;
-  switch (direction) {
-    case "left": rotations = 0; break;
-    case "down": rotations = 1; break;
-    case "right": rotations = 2; break;
-    case "up": rotations = 3; break;
+function spawnRandomTile(tiles: GameTile[], isNew = true) {
+  const emptyCells = getEmptyCells(tiles);
+  if (emptyCells.length === 0) {
+    return tiles;
   }
 
-  let g = grid;
-  for (let i = 0; i < rotations; i++) g = rotateGrid(g);
+  const [row, col] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  const value = Math.random() < 0.9 ? 2 : 4;
 
-  const result = moveLeft(g);
-
-  let rg = result.grid;
-  for (let i = 0; i < (4 - rotations) % 4; i++) rg = rotateGrid(rg);
-
-  return { ...result, grid: rg };
+  return [...tiles, createTile(value, row, col, isNew)];
 }
 
-function canMove(grid: Grid): boolean {
-  for (let r = 0; r < 4; r++)
-    for (let c = 0; c < 4; c++) {
-      if (grid[r][c] === 0) return true;
-      if (c < 3 && grid[r][c] === grid[r][c + 1]) return true;
-      if (r < 3 && grid[r][c] === grid[r + 1][c]) return true;
+function createInitialState(resetIds = false): GameState {
+  if (resetIds) {
+    tileIdCounter = 0;
+  }
+
+  let tiles: GameTile[] = [];
+  tiles = spawnRandomTile(tiles, false);
+  tiles = spawnRandomTile(tiles, false);
+
+  return {
+    tiles,
+    score: 0,
+    gameOver: false,
+  };
+}
+
+function getLineCoordinates(direction: Direction, index: number) {
+  switch (direction) {
+    case "left":
+      return Array.from({ length: GRID_SIZE }, (_, col) => ({ row: index, col }));
+    case "right":
+      return Array.from({ length: GRID_SIZE }, (_, offset) => ({
+        row: index,
+        col: GRID_SIZE - 1 - offset,
+      }));
+    case "up":
+      return Array.from({ length: GRID_SIZE }, (_, row) => ({ row, col: index }));
+    case "down":
+      return Array.from({ length: GRID_SIZE }, (_, offset) => ({
+        row: GRID_SIZE - 1 - offset,
+        col: index,
+      }));
+  }
+}
+
+function moveTiles(tiles: GameTile[], direction: Direction) {
+  const board = getBoard(tiles);
+  const nextTiles: GameTile[] = [];
+  let moved = false;
+  let scoreGain = 0;
+
+  for (let lineIndex = 0; lineIndex < GRID_SIZE; lineIndex += 1) {
+    const coordinates = getLineCoordinates(direction, lineIndex);
+    const lineTiles = coordinates
+      .map(({ row, col }) => board[row][col])
+      .filter((tile): tile is GameTile => tile !== null);
+
+    let targetIndex = 0;
+
+    for (let i = 0; i < lineTiles.length; i += 1) {
+      const tile = lineTiles[i];
+      const target = coordinates[targetIndex];
+      const nextTile = lineTiles[i + 1];
+
+      if (nextTile && nextTile.value === tile.value) {
+        nextTiles.push(
+          updateTile(tile, {
+            row: target.row,
+            col: target.col,
+            value: tile.value * 2,
+            merged: true,
+            isNew: false,
+          })
+        );
+        scoreGain += tile.value * 2;
+        moved = true;
+        i += 1;
+      } else {
+        nextTiles.push(
+          updateTile(tile, {
+            row: target.row,
+            col: target.col,
+            merged: false,
+            isNew: false,
+          })
+        );
+
+        if (tile.row !== target.row || tile.col !== target.col) {
+          moved = true;
+        }
+      }
+
+      targetIndex += 1;
     }
+  }
+
+  if (!moved) {
+    return { tiles, moved: false, scoreGain: 0 };
+  }
+
+  return { tiles: nextTiles, moved: true, scoreGain };
+}
+
+function canMove(tiles: GameTile[]) {
+  if (tiles.length < GRID_SIZE * GRID_SIZE) {
+    return true;
+  }
+
+  const board = getBoard(tiles);
+
+  for (let row = 0; row < GRID_SIZE; row += 1) {
+    for (let col = 0; col < GRID_SIZE; col += 1) {
+      const tile = board[row][col];
+      if (!tile) {
+        return true;
+      }
+
+      if (col + 1 < GRID_SIZE && board[row][col + 1]?.value === tile.value) {
+        return true;
+      }
+
+      if (row + 1 < GRID_SIZE && board[row + 1][col]?.value === tile.value) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
-function gridToTiles(grid: Grid, mergedPositions: Set<string>, newTilePos: [number, number] | null): TileMeta[] {
-  const tiles: TileMeta[] = [];
-  for (let r = 0; r < 4; r++)
-    for (let c = 0; c < 4; c++)
-      if (grid[r][c] !== 0)
-        tiles.push({
-          id: nextId(),
-          value: grid[r][c],
-          row: r,
-          col: c,
-          merged: mergedPositions.has(`${r}-${c}`),
-          isNew: newTilePos !== null && newTilePos[0] === r && newTilePos[1] === c,
-        });
-  return tiles;
+function gameReducer(state: GameState, action: Action): GameState {
+  switch (action.type) {
+    case "newGame":
+      return createInitialState(true);
+    case "move": {
+      if (state.gameOver) {
+        return state;
+      }
+
+      const result = moveTiles(state.tiles, action.direction);
+      if (!result.moved) {
+        return state;
+      }
+
+      const tiles = spawnRandomTile(result.tiles, true);
+      const score = state.score + result.scoreGain;
+
+      return {
+        tiles,
+        score,
+        gameOver: !canMove(tiles),
+      };
+    }
+  }
 }
 
 export function useGame() {
-  const [grid, setGrid] = useState<Grid>(() => {
-    let g = createEmptyGrid();
-    g = addRandomTile(g);
-    g = addRandomTile(g);
-    return g;
-  });
-  const [score, setScore] = useState(0);
+  const [game, dispatch] = useReducer(gameReducer, undefined, () => createInitialState(true));
   const [bestScore, setBestScore] = useState(() => {
-    if (typeof window !== "undefined") {
-      return parseInt(localStorage.getItem("corgi48-best") || "0", 10);
+    if (typeof window === "undefined") {
+      return 0;
     }
-    return 0;
+
+    return Number.parseInt(localStorage.getItem("corgi48-best") || "0", 10);
   });
-  const [gameOver, setGameOver] = useState(false);
-  const [tiles, setTiles] = useState<TileMeta[]>(() => gridToTiles(grid, new Set(), null));
 
-  const handleMove = useCallback(
-    (direction: Direction) => {
-      if (gameOver) return;
-      const result = move(grid, direction);
-      if (!result.moved) return;
+  useEffect(() => {
+    if (game.score > bestScore) {
+      setBestScore(game.score);
+    }
+  }, [bestScore, game.score]);
 
-      const newGrid = addRandomTile(result.grid);
-      const newScore = score + result.score;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("corgi48-best", String(bestScore));
+    }
+  }, [bestScore]);
 
-      // Find the new tile position
-      let newTilePos: [number, number] | null = null;
-      for (let r = 0; r < 4; r++)
-        for (let c = 0; c < 4; c++)
-          if (result.grid[r][c] === 0 && newGrid[r][c] !== 0)
-            newTilePos = [r, c];
-
-      setGrid(newGrid);
-      setScore(newScore);
-      setTiles(gridToTiles(newGrid, result.mergedPositions, newTilePos));
-
-      if (newScore > bestScore) {
-        setBestScore(newScore);
-        if (typeof window !== "undefined")
-          localStorage.setItem("corgi48-best", String(newScore));
-      }
-
-      if (!canMove(newGrid)) setGameOver(true);
-    },
-    [grid, score, bestScore, gameOver]
-  );
-
-  const newGame = useCallback(() => {
-    tileIdCounter = 0;
-    let g = createEmptyGrid();
-    g = addRandomTile(g);
-    g = addRandomTile(g);
-    setGrid(g);
-    setScore(0);
-    setGameOver(false);
-    setTiles(gridToTiles(g, new Set(), null));
+  const handleMove = useCallback((direction: Direction) => {
+    dispatch({ type: "move", direction });
   }, []);
 
-  // Keyboard
+  const newGame = useCallback(() => {
+    dispatch({ type: "newGame" });
+  }, []);
+
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      const map: Record<string, Direction> = {
-        ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right",
+    const handler = (event: KeyboardEvent) => {
+      const directionMap: Partial<Record<string, Direction>> = {
+        ArrowUp: "up",
+        ArrowDown: "down",
+        ArrowLeft: "left",
+        ArrowRight: "right",
       };
-      if (map[e.key]) {
-        e.preventDefault();
-        handleMove(map[e.key]);
+
+      const direction = directionMap[event.key];
+      if (!direction) {
+        return;
       }
+
+      event.preventDefault();
+      dispatch({ type: "move", direction });
     };
+
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleMove]);
+  }, []);
 
-  return { tiles, score, bestScore, gameOver, newGame, handleMove };
+  return {
+    tiles: game.tiles,
+    score: game.score,
+    bestScore,
+    gameOver: game.gameOver,
+    newGame,
+    handleMove,
+  };
 }
