@@ -68,7 +68,7 @@ interface GameBoardProps {
   onNewGame: () => void;
 }
 
-export function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps) {
+export const GameBoard = memo(function GameBoard({ tiles, gameOver, onMove, onNewGame }: GameBoardProps) {
   const touchRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = useCallback((event: React.TouchEvent) => {
