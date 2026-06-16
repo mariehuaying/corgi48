@@ -122,4 +122,8 @@
     color: var(--color-foreground);
     font-family: var(--font-body);
   }
+
+  #lovable-badge {
+    display: none !important;
+  }
 }
