@@ -34,10 +34,22 @@ export function LeaderboardDialog({
       .from("scores")
       .select("id, name, score, created_at")
       .order("score", { ascending: false })
-      .limit(10)
+      .limit(500)
       .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setScores(data ?? []);
+        if (error) {
+          setError(error.message);
+          return;
+        }
+        const seen = new Set<string>();
+        const deduped: ScoreRow[] = [];
+        for (const row of data ?? []) {
+          const key = row.name.trim().toLowerCase();
+          if (seen.has(key)) continue;
+          seen.add(key);
+          deduped.push(row);
+          if (deduped.length >= 10) break;
+        }
+        setScores(deduped);
       });
   }, [open]);
 
