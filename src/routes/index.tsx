@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useGame } from "../hooks/use-game";
 import { GameBoard } from "../components/GameBoard";
-import { debugTestSound } from "../lib/audio";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -42,13 +42,6 @@ function Index() {
       </div>
 
       <GameBoard tiles={tiles} gameOver={gameOver} won={won} onMove={handleMove} onNewGame={newGame} onKeepPlaying={keepPlaying} />
-
-      <button
-        onClick={debugTestSound}
-        className="rounded-lg bg-accent text-accent-foreground px-5 py-3 font-bold text-base"
-      >
-        🔊 Test Sound
-      </button>
     </div>
   );
 }
